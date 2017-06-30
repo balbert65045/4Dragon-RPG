@@ -5,6 +5,10 @@ using UnityStandardAssets.Characters.ThirdPerson;
 [RequireComponent(typeof (ThirdPersonCharacter))]
 public class PlayerMovement : MonoBehaviour
 {
+
+    [SerializeField]
+    float walkMoveStopRadius = .2f;
+
     ThirdPersonCharacter m_Character;   // A reference to the ThirdPersonCharacter on the object
     CameraRaycaster cameraRaycaster;
     Vector3 currentClickTarget;
@@ -25,11 +29,26 @@ public class PlayerMovement : MonoBehaviour
             switch (cameraRaycaster.layerHit)
             {
                  case Layer.Walkable:
-                 m_Character.Move(cameraRaycaster.hit.point - transform.position, false, false);
-                 break;
+                    currentClickTarget = cameraRaycaster.hit.point;
+                     break;
+                case Layer.Enemy:
+                    print("Not moving to enemy");
+                    break;
+                default:
+                    print("Unexpected Layer Found!!");
+                    break;
              }
         }
-          
+        var playerToClickPoint = currentClickTarget - transform.position;
+        if (playerToClickPoint.magnitude >= walkMoveStopRadius)
+        {
+            m_Character.Move(currentClickTarget - transform.position, false, false);
+        }
+        else
+        {
+            m_Character.Move(Vector3.zero, false, false);
+        }
+
     }
 }
 
